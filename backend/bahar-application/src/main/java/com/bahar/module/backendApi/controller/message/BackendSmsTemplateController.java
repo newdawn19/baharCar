@@ -1,0 +1,127 @@
+package com.bahar.module.backendApi.controller.message;
+
+import com.bahar.common.Constants;
+import com.bahar.common.dto.system.AccountInfo;
+import com.bahar.common.dto.message.SmsTemplateDto;
+import com.bahar.common.service.SmsTemplateService;
+import com.bahar.common.util.TokenUtil;
+import com.bahar.framework.exception.BusinessCheckException;
+import com.bahar.framework.pagination.PaginationRequest;
+import com.bahar.framework.pagination.PaginationResponse;
+import com.bahar.framework.web.BaseController;
+import com.bahar.framework.web.ResponseObject;
+import com.bahar.repository.model.MtSmsTemplate;
+import com.bahar.utils.StringUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 短信模板管理类controller
+ *
+ * Created by FSQ
+ * CopyRight https://www.bahar.cn
+ */
+@Api(tags="管理端-短信模板相关接口")
+@RestController
+@AllArgsConstructor
+@RequestMapping(value = "/backendApi/smsTemplate")
+public class BackendSmsTemplateController extends BaseController {
+
+    /**
+     * 短信模板服务接口
+     */
+    private SmsTemplateService smsTemplateService;
+
+    /**
+     * 查询短信模板列表
+     */
+    @ApiOperation(value = "查询短信模板列表")
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('smsTemplate:index')")
+    public ResponseObject list(HttpServletRequest request) throws BusinessCheckException {
+        Integer page = request.getParameter("page") == null ? Constants.PAGE_NUMBER : Integer.parseInt(request.getParameter("page"));
+        Integer pageSize = request.getParameter("pageSize") == null ? Constants.PAGE_SIZE : Integer.parseInt(request.getParameter("pageSize"));
+        String name = request.getParameter("content") == null ? "" : request.getParameter("content");
+        String code = request.getParameter("code") == null ? "" : request.getParameter("code");
+
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        Map<String, Object> searchParams = new HashMap<>();
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            searchParams.put("merchantId", accountInfo.getMerchantId());
+        }
+        if (StringUtil.isNotEmpty(code)) {
+            searchParams.put("code", code);
+        }
+        if (StringUtil.isNotEmpty(name)) {
+            searchParams.put("name", name);
+        }
+        PaginationResponse<MtSmsTemplate> paginationResponse = smsTemplateService.querySmsTemplateListByPagination(new PaginationRequest(page, pageSize, searchParams));
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("paginationResponse", paginationResponse);
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 保存短信模板
+     */
+    @ApiOperation(value = "保存短信模板")
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
+    public ResponseObject saveHandler(@RequestBody SmsTemplateDto smsTemplateDto) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        smsTemplateDto.setMerchantId(accountInfo.getMerchantId());
+        smsTemplateService.saveSmsTemplate(smsTemplateDto);
+        return getSuccessResult(true);
+    }
+
+    /**
+     * 模板详情
+     */
+    @ApiOperation(value = "模板详情")
+    @RequestMapping(value = "/info/{id}", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('smsTemplate:index')")
+    public ResponseObject info(@PathVariable("id") Long id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+
+        MtSmsTemplate mtSmsTemplate = smsTemplateService.querySmsTemplateById(id.intValue());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0) {
+            if (!accountInfo.getMerchantId().equals(mtSmsTemplate.getMerchantId())) {
+                return getFailureResult(1004);
+            }
+        }
+
+        Map<String, Object> result = new HashMap();
+        result.put("smsTemplate", mtSmsTemplate);
+
+        return getSuccessResult(result);
+    }
+
+    /**
+     * 删除短信模板
+     */
+    @ApiOperation(value = "删除短信模板")
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    @CrossOrigin
+    @PreAuthorize("@pms.hasPermission('smsTemplate:edit')")
+    public ResponseObject delete(@PathVariable("id") Integer id) throws BusinessCheckException {
+        AccountInfo accountInfo = TokenUtil.getAccountInfo();
+        MtSmsTemplate mtSmsTemplate = smsTemplateService.querySmsTemplateById(id.intValue());
+        if (accountInfo.getMerchantId() != null && accountInfo.getMerchantId() > 0 && !mtSmsTemplate.getMerchantId().equals(accountInfo.getMerchantId())) {
+            return getFailureResult(1004);
+        }
+        smsTemplateService.deleteTemplate(id, accountInfo.getAccountName());
+        return getSuccessResult(true);
+    }
+}
