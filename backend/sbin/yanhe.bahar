@@ -58,7 +58,9 @@ start() {
     cd $BAHAR_HOME
     echo -n $"Starting $prog: "
     # if not running, start it up here, usually something like "daemon $exec"
-    java -Dfile.encoding=UTF-8 -Xmx2048m -Xms2048m -Xss256k -Xmn1024m -jar bahar-application.jar >> $LOG_DIR/yanhe-bahar.log
+    java -Dfile.encoding=UTF-8 -Xmx2048m -Xms2048m -Xss256k -Xmn1024m \
+        -Denv.properties.path=${BAHAR_CONFIG_PATH:-config} -Denv.profile=${BAHAR_PROFILE:-dev} \
+        -jar bahar-application.jar >> $LOG_DIR/yanhe-bahar.log
     echo $! > $pidfile
     retval=$?
     echo

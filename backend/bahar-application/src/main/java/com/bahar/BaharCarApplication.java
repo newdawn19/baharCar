@@ -21,16 +21,16 @@ import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
  */
 @EnableScheduling
 @SpringBootApplication
-@PropertySource(value = "file:${env.properties.path}/${env.profile}/application.yaml", factory = YamlPropertySourceFactory.class)
-public class baharApplication {
+@PropertySource(value = "classpath:/application.yaml", factory = YamlPropertySourceFactory.class)
+public class BaharCarApplication {
 
-    private static final Logger logger = LoggerFactory.getLogger(baharApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(BaharCarApplication.class);
 
     public static final String REWRITE_FILTER_NAME = "rewriteFilter";
     public static final String REWRITE_FILTER_CONF_PATH = "urlRewrite.xml";
 
     public static void main(String[] args) {
-        SpringApplication.run(baharApplication.class, args);
+        SpringApplication.run(BaharCarApplication.class, args);
         logger.info("==================================================\n" +
                 "恭喜，bahar系统启动成功啦！  \n" +
                 "系统官网：https://www.bahar.cn  \n" +
