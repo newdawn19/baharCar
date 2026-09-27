@@ -5,6 +5,7 @@ import com.bahar.common.web.CommandInterceptor;
 import com.bahar.common.web.ClientUserInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.config.annotation.*;
@@ -23,6 +24,26 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    /**
+     * 本地文件存储根目录，取自 images.root（例如 D:/oss/bahar-car/）
+     * */
+    @Value("${images.root:}")
+    private String imagesRoot;
+
+    /**
+     * 拼装本地磁盘资源位置，供 /static/** 直接读取盘上的上传文件
+     * */
+    private String localUploadLocation() {
+        if (imagesRoot == null || imagesRoot.trim().isEmpty()) {
+            return "classpath:/static/";
+        }
+        String root = imagesRoot.trim().replace("\\", "/");
+        if (!root.endsWith("/")) {
+            root = root + "/";
+        }
+        return "file:" + root + "static/";
+    }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Swagger 资源映射必须放在 /** 之前
@@ -37,7 +58,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .resourceChain(false)
                 .addResolver(new VersionResourceResolver().addContentVersionStrategy("/**"))
                 .addTransformer(new CssLinkResourceTransformer());
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+        // 静态资源：优先 classpath，未命中时从本地磁盘 images.root 读取上传文件
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/", localUploadLocation());
 
         registry.addResourceHandler("/**").addResourceLocations(
                 "classpath:/static/");
