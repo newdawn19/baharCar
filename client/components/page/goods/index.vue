@@ -1,6 +1,6 @@
 <template>
   <!-- 商品列表 -->
-  <view class="goods-container">
+  <view class="goods-container bahar-card">
       <view class="recommend" v-if="list.content.length > 0">
          <text class="txt">为您推荐</text>
       </view>

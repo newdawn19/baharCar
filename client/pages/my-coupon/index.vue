@@ -8,7 +8,7 @@
 
       <!-- 卡券列表 -->
       <view class="goods-list">
-          <view class="goods-item" v-for="(item, index) in list.content" :key="index">
+          <view class="goods-item bahar-card" v-for="(item, index) in list.content" :key="index">
             <!-- 单列卡券 -->
             <view class="dis-flex" @click="onDetail(item.id, item.type)">
                 <!-- 卡券图片 -->

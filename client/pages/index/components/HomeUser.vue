@@ -1,5 +1,5 @@
 <template>
-    <view class="com-user">
+    <view class="com-user bahar-card">
         <view class="user-main">
             <image class="avatar" :src="userInfo.avatar ? userInfo.avatar : '/static/default-avatar.png'"></image>
             <view class="uc">

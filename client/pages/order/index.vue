@@ -8,7 +8,7 @@
 
       <!-- 订单列表 -->
       <view class="order-list">
-        <view class="order-item" v-for="(item, index) in list.content" :key="index">
+        <view class="order-item bahar-card" v-for="(item, index) in list.content" :key="index">
           <view class="item-top" @click="handleTargetDetail(item.id)">
             <view class="item-top-left">
               <text class="order-type">{{ item.typeName }}</text>

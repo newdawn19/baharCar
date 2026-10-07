@@ -1,5 +1,8 @@
 <template>
   <view class="container">
+      <view class="bahar-gradient-header">
+        <text style="font-size:36rpx;font-weight:600;">欢迎光临</text>
+      </view>
       <empty v-if="!storeInfo" :isLoading="isLoading" tips="数据加载中..."></empty>
       <block>
           <HomeBanner v-if="storeInfo" :banners="banner"/>

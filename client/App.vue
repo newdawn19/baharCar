@@ -68,6 +68,17 @@
   .bahar-section-title { font-size: 30rpx; font-weight: 600; color: #333; padding: 24rpx 24rpx 12rpx; }
   .bahar-mt { margin-top: 24rpx; }
   .bahar-mb { margin-bottom: 24rpx; }
+
+  /* 品牌渐变头图 */
+  .bahar-gradient-header {
+    background-image: linear-gradient(135deg, $bahar-theme, lighten($bahar-theme, 12%));
+    color: #fff;
+    padding: 32rpx 24rpx;
+  }
+
+  /* 品牌化 u-empty 空状态 */
+  .u-empty .u-icon__icon,
+  .u-empty .u-icon__label { color: $bahar-theme !important; }
 </style>
 
 <style>

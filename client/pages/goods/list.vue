@@ -2,7 +2,7 @@
   <mescroll-body ref="mescrollRef" :sticky="true" @init="mescrollInit" :down="{ native: true }" @down="downCallback"
     :up="upOption" @up="upCallback">
     <!-- 页面头部 -->
-    <view class="header">
+    <view class="header bahar-card">
       <search class="search" :tips="options.search ? options.search : '搜索商品'" @event="handleSearch" />
     </view>
 
