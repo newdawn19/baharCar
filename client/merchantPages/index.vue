@@ -1,7 +1,7 @@
 <template>
   <view v-if="!isLoading" class="container">
     <!-- 页面头部 -->
-    <view class="main-header">
+    <view class="main-header bahar-anim">
       <!-- 商户信息 -->
       <view v-if="isLogin" class="user-info">
         <view class="user-content">
@@ -45,7 +45,7 @@
     </view>
 
     <!-- 概述 -->
-    <view class="my-asset">
+    <view class="my-asset bahar-card bahar-anim bahar-d1">
       <view class="asset-left flex-box dis-flex flex-x-center">
         <view class="asset-left-item" @click="onTargetMember('all')">
           <view class="item-value dis-flex flex-x-center">
@@ -75,7 +75,7 @@
     </view>
 
     <!-- 待办操作 -->
-    <view class="order-navbar">
+    <view class="order-navbar bahar-card bahar-anim bahar-d2">
       <view class="order-navbar-item" v-for="(item, index) in orderNavbar" :key="index" @click="handleService(item)">
         <view class="item-icon">
           <text class="iconfont" :class="[`icon-${item.icon}`]"></text>
@@ -86,7 +86,7 @@
     </view>
 
     <!-- 我的服务 -->
-    <view class="my-service">
+    <view class="my-service bahar-card bahar-anim bahar-d3">
       <view class="service-title">我的管理</view>
       <view class="service-content clearfix">
         <block v-for="(item, index) in service" :key="index">
@@ -307,13 +307,29 @@
 </script>
 
 <style lang="scss" scoped>
+  // 服务宫格 6 色循环软底 chip（背景 / 前景）
+  $chip-bg: #e8f7f7, #fff3e5, #eef2ff, #fdeeee, #edf9f0, #f6ecff;
+  $chip-fg: $bahar-theme, #ff9500, #5b7cff, #f56c6c, #2fbf67, #9b5cf6;
+
   // 页面头部
   .main-header {
     position: relative;
-    background: $bahar-theme;
+    overflow: hidden;
+    background-image: linear-gradient(135deg, darken($bahar-theme, 8%) 0%, $bahar-theme 55%, lighten($bahar-theme, 16%) 100%);
     padding: 10rpx 10rpx 30rpx 10rpx;
     margin: 20rpx 20rpx;
-    border-radius: 12rpx;
+    border-radius: 24rpx;
+    box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.12);
+
+    /* 装饰圆（仿 .bahar-hero，尺寸按头卡调小） */
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.10);
+    }
+    &::before { width: 220rpx; height: 220rpx; top: -110rpx; right: -60rpx; }
+    &::after { width: 140rpx; height: 140rpx; bottom: -60rpx; left: -40rpx; background: rgba(255, 255, 255, 0.07); }
 
     .user-info {
       display: block;
@@ -373,19 +389,23 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        background: rgba(255, 255, 255, 0.22);
+        border: 1rpx solid rgba(255, 255, 255, 0.35);
 
         .q-icon-img {
           width: 52rpx;
           height: 52rpx;
+          /* 任意图标转纯白：行业无关 */
+          filter: brightness(0) invert(1);
         }
       }
 
       .q-confirm {
-        background: #ffffff;
+        border: 2rpx solid $bahar-theme;
       }
 
       .q-cashier {
-        background: #ffffff;
+        border: 2rpx solid $bahar-theme;
       }
 
       .q-text {
@@ -534,11 +554,14 @@
         margin-bottom: 30rpx;
 
         .item-icon {
-          text-align: center;
+          width: 72rpx;
+          height: 72rpx;
+          border-radius: 22rpx;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           margin: 0 auto;
-          padding: 10rpx 0;
-          color: #ff3800;
-          font-size: 40rpx;
+          font-size: 36rpx;
         }
 
         .item-name {
@@ -548,6 +571,14 @@
           margin-right: 10rpx;
         }
 
+      }
+
+      /* 6 色循环软底 chip */
+      @for $i from 1 through 12 {
+        .service-item:nth-child(#{$i}) .item-icon {
+          background: nth($chip-bg, (($i - 1) % 6) + 1);
+          color: nth($chip-fg, (($i - 1) % 6) + 1);
+        }
       }
     }
   }

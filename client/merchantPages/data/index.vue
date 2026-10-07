@@ -26,7 +26,7 @@
     </view>
 
     <!-- 数据概况 -->
-    <view class="section">
+    <view class="section bahar-anim bahar-d1">
       <view class="section-title">
         <view class="title-icon"></view>
         <text class="title-text">数据概况</text>
@@ -108,7 +108,7 @@
     </view>
 
     <!-- 运营走势 -->
-    <view class="section">
+    <view class="section bahar-anim bahar-d2">
       <view class="section-title">
         <view class="title-icon"></view>
         <text class="title-text">运营走势</text>
@@ -199,7 +199,7 @@
     </view>
 
     <!-- 数据排行 -->
-    <view class="section">
+    <view class="section bahar-anim bahar-d3">
       <view class="section-title">
         <view class="title-icon"></view>
         <text class="title-text">数据排行</text>
@@ -628,7 +628,7 @@ export default {
 .section {
   margin: 20rpx;
   background: #fff;
-  border-radius: 12rpx;
+  border-radius: 16rpx;
   padding: 24rpx;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
 }
