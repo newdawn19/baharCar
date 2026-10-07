@@ -64,6 +64,7 @@
                       <view class="detail-price oneline-hide">
                         <text v-if="itemStyle.show.includes('goodsPrice')" class="goods-price f-30 col-m">￥{{ dataItem.price }}</text>
                         <text v-if="itemStyle.show.includes('linePrice') && dataItem.linePrice > 0" class="line-price col-9 f-24">￥{{ dataItem.linePrice }}</text>
+                        <view class="buy-now">去购买</view>
                         <text v-if="itemStyle.show.includes('goodsSales')" class="sales">已售{{ dataItem.initSale ? dataItem.initSale : 0 }}件</text>
                       </view>
                     </view>
@@ -189,7 +190,7 @@
         margin-left: 20rpx;
         margin-right: 20rpx;
         padding: 20rpx 8rpx 20rpx 8rpx;
-        background: #f5f5f5;
+        background: transparent;
         .txt {
           border-left: solid $bahar-theme 10rpx;
           padding-left: 10rpx;
@@ -202,10 +203,11 @@
           .goods-item {
             box-sizing: border-box;
             padding: 0rpx 12rpx 12rpx 12rpx;
-            background: #f5f5f5;
+            background: transparent;
             .goods-info {
                 background: #ffffff;
                 border-radius: 16rpx;
+                box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
                 padding: 2px;
                 overflow: hidden;
                 .goods-image {
@@ -230,7 +232,7 @@
                     left: 0;
                     -o-object-fit: cover;
                     object-fit: cover;
-                    border-radius: 40rpx;
+                    border-radius: 16rpx;
                   }
                   .member-tag {
                      position: absolute;
@@ -265,8 +267,19 @@
               .detail-price {
                 .goods-price {
                   margin-right: 8rpx;
+                  color: #f03c3c;
                   font-size: 34rpx;
                   font-weight: bold;
+                }
+
+                /* 去购买胶囊按钮 */
+                .buy-now {
+                  color: #fff;
+                  background: $bahar-theme;
+                  font-size: 22rpx;
+                  padding: 6rpx 18rpx;
+                  border-radius: 999rpx;
+                  float: right;
                 }
 
                 .line-price {

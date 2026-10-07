@@ -59,8 +59,8 @@ export default {
                 background: rgba($bahar-theme, 0.08);
             }
             .title {
-                font-size: 24rpx;
-                color: #666;
+                font-size: 26rpx;
+                color: #333;
                 font-weight: 600;
             }
         }

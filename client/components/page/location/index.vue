@@ -98,7 +98,7 @@
           .location-icon {
             margin-right: 4rpx;
             font-size: 24rpx;
-            color: #f03c3c;
+            color: #ffffff;
             font-weight: bold;
           }
       }

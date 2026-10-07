@@ -91,7 +91,7 @@
     position: relative;
     overflow: hidden;
     margin: 24rpx 24rpx 0;
-    padding: 36rpx 32rpx 88rpx;
+    padding: 36rpx 32rpx 40rpx;
     border-radius: 24rpx;
     background-image: linear-gradient(135deg, darken($bahar-theme, 8%) 0%, $bahar-theme 55%, lighten($bahar-theme, 16%) 100%);
     color: #fff;
@@ -138,6 +138,24 @@
     background: #fff; color: $bahar-theme; font-weight: 600;
     padding: 8rpx 26rpx; border-radius: 999rpx; font-size: 24rpx;
   }
+  /* 会员卡内 余额/积分 统计区（两列，中间细分割线） */
+  .bahar-hero__stats {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    margin-top: 26rpx;
+  }
+  .bahar-hero__stat {
+    min-width: 170rpx;
+    padding: 0 20rpx;
+    text-align: right;
+  }
+  .bahar-hero__stat + .bahar-hero__stat {
+    border-left: 1rpx solid rgba(255, 255, 255, 0.28);
+  }
+  .bahar-hero__stat-num { font-size: 36rpx; font-weight: 700; color: #fff; line-height: 1.2; }
+  .bahar-hero__stat-label { font-size: 22rpx; color: rgba(255, 255, 255, 0.85); margin-top: 6rpx; }
 
   /* ===== 动效系统 ===== */
   @keyframes bahar-rise {
