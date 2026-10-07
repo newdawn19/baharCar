@@ -73,4 +73,10 @@ public class MerchantDto implements Serializable {
     @ApiModelProperty("最后操作人")
     private String operator;
 
+    @ApiModelProperty("关联门店数")
+    private Integer storeCount;
+
+    @ApiModelProperty("关联员工数")
+    private Integer staffCount;
+
 }
