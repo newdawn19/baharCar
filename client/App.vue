@@ -60,6 +60,14 @@
 <style lang="scss">
   /* 引入uView库样式 */
   @import "uview-ui/index.scss";
+
+  /* bahar 统一卡片/间距工具类（全局） */
+  .bahar-page { background-color: #f7f8fa; min-height: 100vh; }
+  .bahar-card { background: #fff; border-radius: 16rpx; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06); padding: 24rpx; margin: 24rpx; }
+  .bahar-card--flat { box-shadow: none; }
+  .bahar-section-title { font-size: 30rpx; font-weight: 600; color: #333; padding: 24rpx 24rpx 12rpx; }
+  .bahar-mt { margin-top: 24rpx; }
+  .bahar-mb { margin-bottom: 24rpx; }
 </style>
 
 <style>

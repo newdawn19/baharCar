@@ -572,9 +572,9 @@
        }
   },
   "globalStyle": {
-    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarBackgroundColor": "#373F64",
     "navigationBarTitleText": "",
-    "navigationBarTextStyle": "black",
+    "navigationBarTextStyle": "white",
     "backgroundTextStyle": "dark"
   },
   "easycom": {

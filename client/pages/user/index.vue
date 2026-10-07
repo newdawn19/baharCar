@@ -36,7 +36,7 @@
     </view>
 
     <!-- 钱包余额 & 积分卡片 -->
-    <view class="asset-card">
+    <view class="asset-card bahar-card">
       <view class="asset-card-item" @click="toMemberWallet(userInfo.id ? userInfo.id : 0)">
         <view class="asset-card-icon asset-card-icon--balance">
           <text class="iconfont icon-qianbao"></text>
