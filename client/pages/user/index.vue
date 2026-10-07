@@ -1,45 +1,33 @@
 <template>
   <view v-if="!isLoading" class="container">
-    <view class="bahar-gradient-header">
-      <text style="font-size:36rpx;font-weight:600;">个人中心</text>
-    </view>
-    <!-- 页面头部 -->
-    <view class="main-header">
-      <!-- 用户信息 -->
-      <view class="user-info">
-        <!--头像-->
-        <view class="user-avatar" @click="onUserInfo">
+    <!-- 会员 Hero 卡 -->
+    <view class="bahar-hero bahar-anim">
+      <view class="bahar-hero__top">
+        <view class="bahar-hero__avatar bahar-press" @click="onUserInfo">
           <image class="image" :src="userInfo.avatar ? userInfo.avatar : '/static/default-avatar.png'"></image>
         </view>
-        <view class="user-content" @click="onUserInfo">
-          <!-- 会员昵称 -->
-          <view class="nick-name">{{ userInfo.name ? userInfo.name : '未登录'}}</view>
-          <view class="login-tips" v-if="!isLogin">(点击头像登录)</view>
-          <!-- 会员等级 -->
-          <view v-if="userInfo.gradeId > 0 && gradeInfo" class="user-grade">
-            <view class="user-grade_icon">
-              <image class="image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAA0lBMVEUAAAD/tjL/tzH/uDP/uC7/tjH/tzH/tzL/tTH+tTL+tjP/tDD/tTD+tzD/tjL/szD/uDH/tjL/tjL+tjD/tjT/szb/tzL/tTL+uTH+tjL/tjL/tjL/tTT/tjL/tjL+tjH/uTL/vDD/tjL/tjH/tzL9uS//tTL/nBr/sS7/tjH/ujL/szD/uTv+rzf/tzL+tzH+vDP+uzL+tjP+ry7+tDL9ki/7szf/sEX/tTL/tjL+tjL/tTH/tTT/tzH/tzL/tjP/sTX/uTP/wzX+rTn/vDX9vC8m8ckhAAAAOXRSTlMAlnAMB/vjxKWGMh0S6drMiVxPRkEY9PLy0ru0sKagmo5+dGtgVCMgBP716eXWyMGxqJGRe2o5KSmFNjaYAAABP0lEQVQ4y8XS13KDMBAF0AWDDe4t7r3ETu9lVxJgJ/n/X8rKAzHG5TE+Twz3zki7I/g/KXdghIbGJewrU4yzn08Ebgl6TuZzzuOC6W5es3HX6qsSz3NFShRU0MpucytDmOSpu3yULx3CA9RD1HjVedc0jSjqm6ZzhUjDsFDQhSp/OKj5GQvg0+ZCOixsbtDLAeTTOm/yGi8GyIphIVsgH737FEDV44LJa88IRKK/SetrwT9G/GUIr6vXjoy4GXn7+RboVXnghuSjaoGecwQxL2su3CwAKlO+QFoqxI4FMctHQhQd2OhxTu184jWUlI+rMTBTn1/IQcJHQ6GQdZ7pWiDaNdhTt330efISeiqYwQEzQpTlsURJLhzkEmpCPsERfeIUVyXr6MNuIyp5uziW6xURtt7hhGwzmMNJExfO4Bd9X0ZPqAxdNwAAAABJRU5ErkJggg=="></image>
-            </view>
-            <view class="user-grade_name">
-              <text>{{ gradeInfo.name }}</text>
-            </view>
+        <view class="bahar-hero__user" @click="onUserInfo">
+          <view class="bahar-hero__name">{{ userInfo.name ? userInfo.name : '未登录'}}</view>
+          <view class="bahar-hero__sub" v-if="!isLogin">点击登录，尊享会员特权</view>
+          <view v-if="userInfo.gradeId > 0 && gradeInfo" class="bahar-hero__grade">
+            <text>{{ gradeInfo.name }}</text>
+            <text v-if="gradeEndTime" style="margin-left:12rpx;opacity:.8;">{{ gradeEndTime }}</text>
           </view>
-          <!-- 会员无等级时显示手机号 -->
-          <view v-else class="mobile">{{ userInfo.mobile }}</view>
-          <view class="active-time" v-if="gradeEndTime">{{ gradeEndTime }}</view>
+          <view v-else class="bahar-hero__sub">{{ userInfo.mobile }}</view>
         </view>
-        <view class="pay-qr" @click="toMemberCode(userInfo.id ? userInfo.id : 0)">
-            <view class="qrcode iconfont icon-qr-extract"></view>
+        <view class="bahar-hero__qr bahar-press" @click="toMemberCode(userInfo.id ? userInfo.id : 0)">
+          <text class="iconfont icon-qr-extract"></text>
         </view>
       </view>
-      <view class="user-no">
-        <view class="no" v-if="userInfo.userNo">会员号：{{ userInfo.userNo ? userInfo.userNo : '-'}}</view>
-        <view class="recharge" @click="toRecharge(userInfo.id ? userInfo.id : 0)">储值有礼</view>
+      <view class="bahar-hero__bottom">
+        <text class="bahar-hero__no" v-if="userInfo.userNo">会员号：{{ userInfo.userNo }}</text>
+        <text class="bahar-hero__no" v-else></text>
+        <view class="bahar-hero__recharge bahar-press" @click="toRecharge(userInfo.id ? userInfo.id : 0)">储值有礼 ›</view>
       </view>
     </view>
 
     <!-- 钱包余额 & 积分卡片 -->
-    <view class="asset-card bahar-card">
+    <view class="asset-card bahar-card bahar-anim bahar-d1">
       <view class="asset-card-item" @click="toMemberWallet(userInfo.id ? userInfo.id : 0)">
         <view class="asset-card-icon asset-card-icon--balance">
           <text class="iconfont icon-qianbao"></text>
@@ -70,7 +58,7 @@
     </view>
 
     <!--会员升级 start-->
-    <view class="member-update bahar-card" v-if="memberGrade.length > 0">
+    <view class="member-update bahar-card bahar-anim bahar-d2" v-if="memberGrade.length > 0">
         <view class="update-title">
             <text>会员升级</text>
         </view>
@@ -97,7 +85,7 @@
     <!--会员升级 end-->
     
     <!-- 订单操作 -->
-    <view class="order-navbar bahar-card">
+    <view class="order-navbar bahar-card bahar-anim bahar-d3">
       <view class="nav-title">我的订单</view>
       <view class="nav-content">
           <view class="order-navbar-item" v-for="(item, index) in orderNavbar" :key="index" @click="onTargetOrder(item)">
@@ -111,7 +99,7 @@
     </view>
     
     <!-- 服务单操作 -->
-    <view class="order-navbar bahar-card">
+    <view class="order-navbar bahar-card bahar-anim bahar-d3">
       <view class="nav-title">服务单</view>
       <view class="nav-content">
           <view class="order-navbar-item" v-for="(item, index) in vehicleOrderNavbar" :key="index" @click="onTargetVehicleOrder(item)">
@@ -125,7 +113,7 @@
     </view>
 
     <!-- 我的资产 -->
-    <view class="my-asset bahar-card">
+    <view class="my-asset bahar-card bahar-anim bahar-d4">
       <view class="asset-left flex-box dis-flex flex-x-center">
         <view class="asset-left-item" @click="onTargetMyCoupon('C')">
           <view class="item-value dis-flex flex-x-center">
@@ -155,7 +143,7 @@
     </view>
 
     <!-- 我的服务 -->
-    <view class="my-service bahar-card">
+    <view class="my-service bahar-card bahar-anim bahar-d5">
       <view class="service-title">我的服务</view>
       <view class="service-content clearfix">
         <block v-for="(item, index) in service" :key="index">
@@ -522,128 +510,15 @@
 </script>
 
 <style lang="scss" scoped>
-  // 页面头部
-  .main-header {
-    background: url('~@/static/background/user-header.png') no-repeat;
-    height: 350rpx;
-    background-size: cover;
-    overflow: hidden;
-    display: block;
-    align-items: center;
-    margin: 10rpx 25rpx 10rpx 25rpx;
-    border-radius: 10rpx;
-    
-    .user-info {
-      display: block;
-      height: 200rpx;
-      margin: 20rpx;
-      margin-left: 20rpx;
-      .user-avatar {
-          padding-top: 10rpx;
-          width: 50rpx;
-          margin-top: 70rpx;
-          float: left;
-          .image {
-              display: block;
-              width: 100rpx;
-              height: 100rpx;
-              border-radius: 999rpx;
-          }
-      }
-      
-      .user-content {
-        display: block;
-        justify-content: center;
-        margin-top: 80rpx;
-        margin-left: 60rpx;
-        float: left;
-        color: #ffffff;
-        max-width: 300rpx;
-        .nick-name {
-            font-size: 32rpx;
-            font-weight: bold;
-            max-width: 270rpx;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .mobile {
-          margin-top: 15rpx;
-          font-size: 26rpx;
-        }
-
-        .user-grade {
-          display: block;
-          align-items: center;
-          background: #3c3c3c;
-          margin-top: 8rpx;
-          border-radius: 10rpx;
-          padding: 5rpx 12rpx;
-          width: 80%;
-          min-width: 160rpx;
-          height: 40rpx;
-
-          .user-grade_icon .image {
-            display: block;
-            width: 32rpx;
-            height: 32rpx;
-            float: left;
-          }
-
-          .user-grade_name {
-            margin-left: 5rpx;
-            font-size: 24rpx;
-            color: #EEE0C3;
-            float: left;
-          }
-        }
-        .active-time {
-            margin-top: 3rpx;
-        }
-
-        .login-tips {
-          margin-top: 9rpx;
-          font-size: 25rpx;
-        }
-      }
-      .pay-qr {
-          color:#ffffff;
-          margin-top: 10rpx;
-          margin-left: 50rpx;
-          text-align: center;
-          width: 50rpx;
-          float: right;
-          .qrcode {
-              display: block;
-              font-size: 40rpx;
-          }
-      }
-    }
-    .user-no {
-        display: block;
-        font-size: 25rpx;
-        margin: 60rpx 0rpx 0rpx 20rpx;
-        color: #ffffff;
-        .no {
-            float: left;
-        }
-        .recharge {
-            float: right;
-            margin-right: 20rpx;
-        }
-    }
-  }
-
   // 余额和积分卡片
   .asset-card {
     display: flex;
     align-items: center;
-    margin: 10rpx 25rpx 10rpx 25rpx;
+    margin: -64rpx 24rpx 10rpx;
     background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
     border-radius: 16rpx;
     border: 1rpx solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04), 0 0 0 1rpx rgba(0, 172, 172, 0.06);
+    box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04), 0 0 0 1rpx rgba($bahar-theme, 0.10);
     padding: 36rpx 0;
     position: relative;
     z-index: 2;
@@ -789,12 +664,19 @@
           position: relative;
           width: 33%;
           .item-icon {
-            text-align: center;
-            margin: 0 auto;
-            padding: 10rpx 0;
-            color: #545454;
+            width: 80rpx;
+            height: 80rpx;
+            margin: 0 auto 10rpx;
+            border-radius: 22rpx;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
             font-size: 40rpx;
           }
+          &:nth-child(1) .item-icon { background: linear-gradient(135deg, $bahar-theme, lighten($bahar-theme, 10%)); }
+          &:nth-child(2) .item-icon { background: linear-gradient(135deg, #ff9500, #ffb340); }
+          &:nth-child(3) .item-icon { background: linear-gradient(135deg, #5b7cff, #86a0ff); }
 
           .item-name {
             font-size: 24rpx;
@@ -838,17 +720,22 @@
     }
 
     .service-content {
+      $chip-bg: (#e8f7f7, #fff3e5, #eef2ff, #fdeeee, #edf9f0, #f6ecff);
+      $chip-fg: ($bahar-theme, #ff9500, #5b7cff, #f56c6c, #2fbf67, #9b5cf6);
       .service-item {
         width: 25%;
         float: left;
         margin-bottom: 25rpx;
 
         .item-icon {
-          text-align: center;
-          margin: 0 auto;
-          padding: 10rpx 0;
-          color: #ff3800;
-          font-size: 40rpx;
+          width: 72rpx;
+          height: 72rpx;
+          margin: 0 auto 12rpx;
+          border-radius: 22rpx;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 38rpx;
         }
 
         .item-name {
@@ -856,6 +743,13 @@
           color: #545454;
           text-align: center;
           margin-right: 10rpx;
+        }
+      }
+      @for $i from 1 through 12 {
+        $idx: ($i - 1) % 6 + 1;
+        .service-item:nth-child(#{$i}) .item-icon {
+          background: nth($chip-bg, $idx);
+          color: nth($chip-fg, $idx);
         }
       }
       .disabled {
