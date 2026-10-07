@@ -7,7 +7,6 @@ import java.io.Serializable;
 /**
  * 请求车辆请求参数
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Data

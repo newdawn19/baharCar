@@ -97,7 +97,7 @@ bahar汽车美容4S店会员系统是一套开源的汽车服务行业会员管�
 不足和待完善之处请谅解！源码仅供学习交流，更多功能欢迎进群咨询讨论，或需安装帮助请联系我们（<b>麻烦先点star！！！！！！</b>）。<br>
 官方网站：https://www.bahar.cn <br>
 开源不易，感谢支持！<br>
-<b>作者wx：fsq_better：</b><br>
+<b>作者wx：bahar：</b><br>
 <p><img src="https://bahar-cn.oss-cn-shenzhen.aliyuncs.com/screenshots/qr.png" alt="公众号二维码"></p>
 
 

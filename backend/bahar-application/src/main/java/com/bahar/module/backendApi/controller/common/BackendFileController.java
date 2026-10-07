@@ -30,7 +30,6 @@ import java.util.Map;
 /**
  * 文件上传管理控制类
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Api(tags="管理端-文件上传相关接口")

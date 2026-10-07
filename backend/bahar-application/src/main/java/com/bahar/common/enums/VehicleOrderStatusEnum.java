@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 /**
  * 车辆服务单状态枚举
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 public enum VehicleOrderStatusEnum {

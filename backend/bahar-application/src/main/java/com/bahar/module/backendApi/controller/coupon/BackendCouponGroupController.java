@@ -43,7 +43,6 @@ import java.util.Map;
 /**
  * 卡券分组管理类controller
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Api(tags="管理端-卡券分组相关接口")

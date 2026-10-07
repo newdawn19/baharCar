@@ -13,7 +13,6 @@ import java.util.Map;
 /**
  * 焦点图业务接口
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 public interface BannerService extends IService<MtBanner> {

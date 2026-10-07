@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 /**
  * 桌码使用状态
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 public enum TableUseStatusEnum {

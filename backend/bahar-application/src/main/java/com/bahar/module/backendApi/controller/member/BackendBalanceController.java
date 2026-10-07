@@ -40,7 +40,6 @@ import java.util.*;
 /**
  * 余额管理controller
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Api(tags="管理端-余额相关接口")

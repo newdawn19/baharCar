@@ -8,7 +8,6 @@ import java.util.Date;
 /**
  * 会员车辆请求参数
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Data

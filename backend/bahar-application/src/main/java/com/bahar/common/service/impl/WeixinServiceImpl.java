@@ -61,7 +61,6 @@ import java.util.*;
 /**
  * 微信相关接口
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Service

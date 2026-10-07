@@ -16,7 +16,6 @@ import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 /**
  * 启动程序
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @EnableScheduling

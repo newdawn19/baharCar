@@ -39,7 +39,6 @@ import static com.bahar.common.util.XlsUtil.objectConvertToString;
 /**
  * 转赠管理类controller
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Api(tags="管理端-转赠相关接口")

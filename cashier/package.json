@@ -2,7 +2,7 @@
   "name": "baharCashier",
   "version": "1.0.0",
   "description": "bahar收银系统",
-  "author": "FSQ",
+  "author": "bahar",
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider vue-cli-service serve",

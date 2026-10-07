@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * web配置
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Configuration

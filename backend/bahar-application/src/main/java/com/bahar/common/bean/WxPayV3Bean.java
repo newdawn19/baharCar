@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 /**
  * 微信V3支付Bean
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Component

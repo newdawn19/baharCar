@@ -29,7 +29,6 @@ import java.util.Map;
 /**
  * 会员车辆controller
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Api(tags="会员端-会员车辆相关接口")

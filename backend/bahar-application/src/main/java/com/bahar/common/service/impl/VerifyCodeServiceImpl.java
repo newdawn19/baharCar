@@ -18,7 +18,6 @@ import java.util.List;
 /**
  * 验证码业务实现类
  *
- * Created by FSQ
  * CopyRight https://www.bahar.cn
  */
 @Service
