@@ -105,7 +105,7 @@
         }
     }
 </script>
-<style scoped lang='less'>
+<style scoped lang="scss">
     .plate {
         display: flex;
         justify-content: space-between;
@@ -180,7 +180,7 @@
             padding: 0 19rpx 20rpx;
             .item {
                 display: inline-block;
-                width: calc(~"(100% - 72rpx) / 10");
+                width: calc((100% - 72rpx) / 10);
                 height: 84rpx;
                 margin-right: 8rpx;
                 margin-bottom: 8rpx;
