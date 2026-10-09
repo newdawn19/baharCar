@@ -566,9 +566,9 @@
 
   // 订单操作
   .order-navbar {
-    margin: 10rpx auto 10rpx auto;
+    /* 原来 width:94% + margin auto -> 11~364，比 hero/资产卡的 12~363 宽 0.7px/边 */
+    margin: 10rpx 24rpx;
     padding: 20rpx 0;
-    width: 94%;
     box-shadow: 0 1rpx 5rpx 0px rgba(0, 0, 0, 0.05);
     font-size: 30rpx;
     border-radius: 10rpx;
@@ -630,11 +630,10 @@
 
   // 我的服务
   .my-service {
-    margin: 0rpx auto 20rpx auto;
+    margin: 0 24rpx 20rpx;
     border: 2rpx #f5f5f5 solid;
     background: #FFF;
     padding: 10rpx 0rpx;
-    width: 94%;
     box-shadow: 0 1rpx 5rpx 0px rgba(0, 0, 0, 0.05);
     border-radius: 10rpx;
     display: block;
