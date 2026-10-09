@@ -92,10 +92,13 @@
       </view>
     </view>
 
-    <!-- 我的资产 -->
+    <!-- 我的资产（asset-card 规格：渐变白卡 + 主色 6% 描边 + 64rpx 图标 + 2rpx 格间分隔线） -->
     <view class="my-asset bahar-card bahar-anim bahar-d4">
       <view class="asset-left flex-box dis-flex flex-x-center">
         <view class="asset-left-item" @click="onTargetMyCoupon('C')">
+          <view class="item-icon">
+            <text class="iconfont icon-youhuiquan"></text>
+          </view>
           <view class="item-value dis-flex flex-x-center">
             <text>{{ isLogin ? assets.coupon : '0' }}</text>
           </view>
@@ -104,6 +107,9 @@
           </view>
         </view>
         <view class="asset-left-item" @click="onTargetMyCoupon('P')">
+          <view class="item-icon">
+            <text class="iconfont icon-qianbao"></text>
+          </view>
           <view class="item-value dis-flex flex-x-center">
             <text>{{ isLogin ? assets.prestore : '0' }}</text>
           </view>
@@ -112,6 +118,9 @@
           </view>
         </view>
         <view class="asset-left-item" @click="onTargetMyCoupon('T')">
+          <view class="item-icon">
+            <text class="iconfont icon-zhangben"></text>
+          </view>
           <view class="item-value dis-flex flex-x-center">
             <text>{{ isLogin ? assets.timer : '0' }}</text>
           </view>
@@ -490,33 +499,62 @@
 </script>
 
 <style lang="scss" scoped>
-  // 我的资产
+  // 我的资产（竞品 asset-card 规格：渐变白卡 / 16rpx 圆角 / 主色 6% 描边+阴影 /
+  // 图标 64rpx / 数值 42rpx / 标签 22rpx / 格子间 2rpx 分隔线）
   .my-asset {
     display: flex;
-    background: #fff;
+    background: linear-gradient(to bottom, #ffffff 0%, #fbfcfc 100%);
     margin: 0rpx 20rpx 0rpx 20rpx;
-    padding: 40rpx 0;
-    border: 2rpx #f5f5f5 solid;
-    border-radius: 10rpx;
+    padding: 32rpx 0 28rpx;
+    border: 2rpx solid rgba($bahar-theme, 0.06);
+    border-radius: 16rpx;
+    box-shadow: 0 4rpx 16rpx rgba($bahar-theme, 0.06);
     .asset-right {
       width: 200rpx;
       border-left: 1rpx solid #eee;
     }
     .asset-left-item {
+      position: relative;
       text-align: center;
       color: #666;
-      padding: 0 72rpx;
-      width: 33%;
+      padding: 0 20rpx;
+      width: 33.33%;
+
+      /* 格子之间的 2rpx 分隔线（最后一格右侧不画） */
+      &:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 18%;
+        right: 0;
+        width: 2rpx;
+        height: 64%;
+        background: rgba($bahar-theme, 0.08);
+      }
+
+      .item-icon {
+        width: 64rpx;
+        height: 64rpx;
+        margin: 0 auto 12rpx;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32rpx;
+        color: #fff;
+        background: linear-gradient(135deg, $bahar-theme, rgba($bahar-theme, 0.72));
+      }
 
       .item-value {
-        font-size: 35rpx;
-        color: #f03c3c;
+        font-size: 42rpx;
+        /* 资产数字与商品价同色（红色只做数字强调） */
+        color: #fa5151;
         font-weight: bold;
       }
-      
+
       .item-name {
-        font-size: 25rpx;
+        font-size: 22rpx;
         margin-top: 6rpx;
+        color: #888;
       }
     }
 

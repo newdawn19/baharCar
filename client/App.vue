@@ -92,6 +92,9 @@
     overflow: hidden;
     margin: 24rpx 24rpx 0;
     padding: 36rpx 32rpx 40rpx;
+    /* 竞品规格：会员卡高 280rpx。用 min-height 而不是 height —— 卡内还有
+       头像/等级/余额积分/会员号四层内容，写死 height 在字号放大或文案换行时会把内容挤出去。 */
+    min-height: 280rpx;
     border-radius: 24rpx;
     background-image: linear-gradient(135deg, darken($bahar-theme, 8%) 0%, $bahar-theme 55%, lighten($bahar-theme, 16%) 100%);
     color: #fff;
