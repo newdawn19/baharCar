@@ -50,14 +50,17 @@
 
 <style lang="scss" scoped>
 .com-user {
-    width: 100%;
+    /* 关键：必须是 auto 而不是 100%。
+       本卡带 .bahar-card 的 24rpx 外边距，写死 100% 时宽度按父容器（视口 375）算，
+       再叠加左边距就整体右移，右边溢出 12px（首页横向可滚）。 */
+    width: auto;
     height: auto;
     padding: 0rpx 10rpx 10rpx 10rpx;
     margin-top: 20rpx;
     position: relative;
     z-index: 2;
     .user-main{
-        width: 100%;
+        width: auto;
         padding: 20rpx;
         background: #f5f5f5;
         border-radius: 20rpx;

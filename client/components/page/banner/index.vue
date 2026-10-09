@@ -1,5 +1,5 @@
 <template>
-  <view class="diy-banner" :style="{ height: `${imgHeights[imgCurrent]}rpx` }">
+  <view class="diy-banner" :class="{ 'diy-banner--flush': flush }" :style="{ height: `${imgHeights[imgCurrent]}rpx` }">
     <!-- 图片轮播 -->
     <swiper :autoplay="autoplay" class="swiper-box" :duration="duration" :circular="true" :interval="itemStyle.interval * 1000"
       @change="_bindChange">
@@ -30,7 +30,16 @@
       itemIndex: String,
       itemStyle: Object,
       params: Object,
-      dataList: Array
+      dataList: Array,
+      /**
+       * 顶部是否已由页面的吸顶容器占位。
+       * 默认 false：保留为旧版 fixed 头部预留的 100/120rpx 上间距；
+       * 传 true：去掉这段补偿（首页头部已回到普通文档流，再留就是一段空洞）。
+       */
+      flush: {
+        type: Boolean,
+        default: false
+      }
     },
 
     mixins: [mixin],
@@ -95,10 +104,14 @@
     /* #ifdef H5 */
     margin-top: 120rpx;
     /* #endif */
+    /* 首页：头部已是普通文档流的吸顶容器，不再需要为 fixed 头部预留上间距 */
+    &.diy-banner--flush {
+      margin-top: 0;
+    }
     // swiper组件
     .swiper-box {
       height: 100%;
-      padding: 0rpx 10rpx 0rpx 10rpx;
+      padding: 0rpx 20rpx 0rpx 20rpx;
       max-width: 750rpx;
       max-height: 450rpx;
       .slide-image {

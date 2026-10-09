@@ -1,15 +1,15 @@
 <template>
   <!-- 导航组 -->
-  <view class="diy-navBar">
-    <view class="data-list" :class="[`avg-sm-${itemStyle.rowsNum}`]">
+  <view class="diy-navBar bahar-anim" :style="{ background: itemStyle.background, color: itemStyle.textColor }">
+    <view class="data-list" :class="[`avg-sm-${itemStyle.rowsNum || 4}`]">
       <view class="item-nav" v-for="(dataItem, index) in dataList" :key="index">
-        <view class="nav-to" @click="onLink(dataItem.linkUrl)">
+        <view class="nav-to bahar-press" :class="'nav-' + index" @click="onLink(dataItem.linkUrl)">
           <view class="item-image">
-            <image class="image" mode="widthFix" :src="dataItem.imgUrl"></image>
+            <image class="image" mode="aspectFit" :src="dataItem.imgUrl"></image>
           </view>
           <view class="item-text onelist-hidden">
              <view class="text">{{ dataItem.text }}</view>
-             <view class="tip">{{ dataItem.tip }}</view>
+             <view class="tip">{{ dataItem.tip ? dataItem.tip : '' }}</view>
           </view>
         </view>
       </view>
@@ -42,6 +42,8 @@
     methods: {
         onLink(linkObj) {
             const app = this;
+            // 汽车行业化分支：'vehicleScan' 不是路由，是「扫码进入车辆订单」的约定值。
+            // 零售版没有这段，同步样式时不能覆盖掉，否则汽修扫码入口失效。
             if (linkObj == 'vehicleScan') {
                 uni.scanCode({
                     success:function(res){
@@ -58,73 +60,88 @@
 </script>
 
 <style lang="scss" scoped>
+  /* 卡片容器：取代旧的 float 分列写法。
+     外边距刻意与全局 .bahar-card 同为 24rpx —— 差哪怕 2px，
+     同一屏里四宫格卡与商品/优惠券卡的左右边缘就对不齐（用户报的就是"左右不对齐"）。 */
   .diy-navBar {
-      background: #ffffff;
-      padding: 10rpx;
-      margin: 10rpx;
-      border-radius: 20rpx;
+    background: #ffffff;
+    margin: 24rpx;
+    padding: 6rpx;
+    border-radius: 20rpx;
+    border: 1rpx solid #e6e6e6;
+    box-sizing: border-box;
   }
-  .diy-navBar .data-list::after {
-    clear: both;
-    content: " ";
-    display: table;
+
+  .diy-navBar .data-list {
+    display: flex;
+    flex-wrap: wrap;
   }
 
   .item-nav {
-    float: left;
-    margin: 10rpx 0px 5rpx 0px;
-    text-align: center;
-    background: #ffffff;
+    box-sizing: border-box;
     padding: 2rpx;
-    color: #666666;
+    text-align: center;
     .nav-to {
-        border: 2rpx solid $bahar-theme;
-        margin: 0rpx 2px 0px 2px;
-        padding: 38rpx 20rpx 20rpx 20rpx;
-        border-radius: 8rpx;
-        background: #ffffff;
-        height: 150rpx;
+        margin: 0;
+        padding: 16rpx 8rpx 12rpx 8rpx;
+        border-radius: 12rpx;
+        min-height: 120rpx;
+        box-sizing: border-box;
+        background: linear-gradient(to bottom, #ffffff 0%, #f5f5f5 100%);
+        border: 1rpx solid #e5e5e5;
+        transition: transform 0.15s ease, background 0.15s ease;
     }
-
+    .nav-to:active {
+        transform: scale(0.96);
+        background: #f0f5f5;
+    }
     .item-text {
-      text-align: left;
-      padding-left: 20rpx;
+      padding: 0 4rpx;
       .text {
-          font-size: 32rpx;
+          font-size: 24rpx;
+          color: #333;
+          font-weight: 600;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
       }
       .tip {
-          font-size: 22rpx;
-          margin-top: 8rpx;
-          color: #999;
+          font-size: 20rpx;
+          margin-top: 4rpx;
+          color: #333;
+          opacity: 0.8;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
       }
     }
 
     .item-image {
-      margin-bottom: 4px;
+      margin: 0 auto;
       font-size: 0;
-      margin-left: 30rpx;
-      width: 88rpx;
-      height: 88rpx;
-      float: left;
+      width: 72rpx;
+      height: 72rpx;
+      box-sizing: border-box;
     }
 
     .item-image .image {
-      width: 80rpx;
-      height: 80rpx;
+      width: 72rpx;
+      height: 72rpx;
+      border-radius: 16rpx;
     }
 
   }
 
-  /* 分列布局 */
+  /* 分列布局（flex 等分，默认 4 列） */
   .diy-navBar .avg-sm-3>.item-nav {
-    width: 33.33333333%;
+    flex: 0 0 33.33333333%;
   }
 
   .diy-navBar .avg-sm-4>.item-nav {
-    width: 25%;
+    flex: 0 0 25%;
   }
 
   .diy-navBar .avg-sm-2>.item-nav {
-    width: 50%;
+    flex: 0 0 50%;
   }
 </style>

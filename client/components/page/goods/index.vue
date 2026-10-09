@@ -2,7 +2,7 @@
   <!-- 商品列表 -->
   <view class="goods-container bahar-card">
       <view class="recommend" v-if="list.content.length > 0">
-         <text class="txt">为您推荐</text>
+         <text class="txt">热门商品</text>
       </view>
       <mescroll-body ref="mescrollRef" :sticky="true" @init="mescrollInit" :down="{ native: true }" @down="downCallback" :up="upOption" @up="upCallback">
       <view class="diy-goods" :style="{ background: itemStyle.background }">
@@ -14,10 +14,8 @@
                 <view class="dis-flex">
                   <!-- 商品图片 -->
                   <view class="goods-item_left">
-                    <view class="goods-image">
-                      <image class="image" lazy-load :lazy-load-margin="0" :src="dataItem.logo"></image>
-                      <view class="member-tag" v-if="dataItem.gradeIds">会员专属</view>
-                    </view>
+                    <image class="image" lazy-load :lazy-load-margin="0" :src="dataItem.logo"></image>
+                    <view class="member-tag" v-if="dataItem.gradeIds" style="top:0;left:auto;right:0;padding:4rpx 12rpx;font-size:20rpx;color:#fff;background:linear-gradient(135deg,#d4a843,#b8860b);border-radius:0 0 0 12rpx;z-index:5;">会员专属</view>
                   </view>
                   <view class="goods-item_right">
                     <!-- 商品名称 -->
@@ -49,7 +47,7 @@
                     <!-- 商品图片 -->
                     <view class="goods-image">
                       <image class="image" lazy-load :lazy-load-margin="0" mode="aspectFill" :src="dataItem.logo"></image>
-                      <view class="member-tag" v-if="dataItem.gradeIds">会员专属</view>
+                      <view class="member-tag" v-if="dataItem.gradeIds" style="top:0;left:auto;right:0;padding:4rpx 12rpx;font-size:20rpx;color:#fff;background:linear-gradient(135deg,#d4a843,#b8860b);border-radius:0 0 0 12rpx;z-index:5;">会员专属</view>
                     </view>
                     <view class="detail">
                       <!-- 商品标题 -->
@@ -235,15 +233,15 @@
                     border-radius: 16rpx;
                   }
                   .member-tag {
-                     position: absolute;
-                     top: 0;
-                     right: 0;
-                     padding: 4rpx 12rpx;
-                     font-size: 20rpx;
-                     color: #fff;
-                     background: linear-gradient(135deg, #d4a843, #b8860b);
-                     border-radius: 0 0 0 12rpx;
-                     z-index: 2;
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    padding: 4rpx 12rpx;
+                    font-size: 20rpx;
+                    color: #fff;
+                    background: linear-gradient(135deg, #d4a843, #b8860b);
+                    border-radius: 0 0 0 12rpx;
+                    z-index: 5;
                   }
                 }
             }
@@ -349,27 +347,28 @@
             }
 
             .goods-item_left {
+              position: relative;
               display: flex;
               width: 40%;
               background: #fff;
               align-items: center;
 
-              .goods-image {
-                position: relative;
-                width: auto;
-                height: auto;
-                padding-bottom: 0;
-                overflow: visible;
-                &:after { display: none; }
-                
-                .image {
-                  display: block;
-                  width: 220rpx;
-                  height: 200rpx;
-                  border-radius: 10rpx;
-                  border: 1rpx #cccccc solid;
-                  position: static;
-                }
+              .image {
+                display: block;
+                width: 220rpx;
+                height: 200rpx;
+                border-radius: 10rpx;
+              }
+              .member-tag {
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding: 4rpx 12rpx;
+                font-size: 20rpx;
+                color: #fff;
+                background: linear-gradient(135deg, #d4a843, #b8860b);
+                border-radius: 0 0 0 12rpx;
+                z-index: 5;
               }
             }
 
@@ -411,7 +410,7 @@
 
               .price_x {
                 margin-right: 16rpx;
-                color: #f03c3c;
+                color: #fa5151;
                 font-size: 33rpx;
                 font-weight: bold;
               }

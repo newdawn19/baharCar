@@ -253,15 +253,17 @@
           font-size: 24rpx;
           color: #e49a3d;
         }
+        /* 领券按钮：与首页「去购买」同为主色胶囊。
+           原黄底(#f8df98)+橙字(#f86d48)会在首页引入第 4 套强调色，与竞品的克制配色不符。 */
         .receive {
           height: 46rpx;
           width: 128rpx;
           line-height: 46rpx;
           text-align: center;
-          border: 1px solid #f8df00;
+          border: 1rpx solid $bahar-theme;
           border-radius: 5rpx;
-          color: #f86d48;
-          background: #f8df98;
+          color: #ffffff;
+          background: $bahar-theme;
           font-size: 22rpx;
           &.state {
             border: none;
@@ -278,9 +280,11 @@
         .desc_footer {
           font-size: 24rpx;
 
+          /* 面额也是"价格"，跟首页商品价统一成 #fa5151（原来这里用的 #f03c3c，
+             会让首页出现两套红） */
           .price_x {
             margin-right: 16rpx;
-            color: #f03c3c;
+            color: #fa5151;
             font-size: 30rpx;
           }
 
