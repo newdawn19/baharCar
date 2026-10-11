@@ -41,29 +41,30 @@
                   </view>
                 </view>
               </block>
-              <!-- 多列商品 -->
+              <!-- 多列商品（首页热门商品：双列瀑布流） -->
               <block v-else>
                 <view class="goods-info">
                     <!-- 商品图片 -->
                     <view class="goods-image">
                       <image class="image" lazy-load :lazy-load-margin="0" mode="aspectFill" :src="dataItem.logo"></image>
-                      <view class="member-tag" v-if="dataItem.gradeIds" style="top:0;left:auto;right:0;padding:4rpx 12rpx;font-size:20rpx;color:#fff;background:linear-gradient(135deg,#d4a843,#b8860b);border-radius:0 0 0 12rpx;z-index:5;">会员专属</view>
+                      <!-- 促销角标：有划线价即判定为在促销（后端没有独立的"限时抢购"标记） -->
+                      <view class="flash-tag" v-if="isPromotion(dataItem)">限时抢购</view>
+                      <view class="member-tag" v-if="dataItem.gradeIds">会员专属</view>
                     </view>
                     <view class="detail">
-                      <!-- 商品标题 -->
+                      <!-- 商品标题（最多 2 行） -->
                       <view v-if="itemStyle.show.includes('goodsName')" class="goods-name twoline-hide">
                         {{ dataItem.name }}
                       </view>
-                      <!-- 商品卖点 -->
-                      <view v-if="itemStyle.show.includes('sellingPoint')" class="desc-selling_point dis-flex">
-                        <text class="oneline-hide">{{ dataItem.salePoint ? dataItem.salePoint : '' }}</text>
-                      </view>
-                      <!-- 商品价格 -->
+                      <!-- 价格行：售价（红） + 划线原价 -->
                       <view class="detail-price oneline-hide">
-                        <text v-if="itemStyle.show.includes('goodsPrice')" class="goods-price f-30 col-m">￥{{ dataItem.price }}</text>
-                        <text v-if="itemStyle.show.includes('linePrice') && dataItem.linePrice > 0" class="line-price col-9 f-24">￥{{ dataItem.linePrice }}</text>
-                        <view class="buy-now">去购买</view>
+                        <text v-if="itemStyle.show.includes('goodsPrice')" class="goods-price">¥{{ dataItem.price ? dataItem.price : '0.00' }}</text>
+                        <text v-if="itemStyle.show.includes('linePrice') && dataItem.linePrice > 0" class="line-price">¥{{ dataItem.linePrice }}</text>
+                      </view>
+                      <!-- 底行：已售 N 件 + 去购买 -->
+                      <view class="detail-bottom">
                         <text v-if="itemStyle.show.includes('goodsSales')" class="sales">已售{{ dataItem.initSale ? dataItem.initSale : 0 }}件</text>
+                        <view class="buy-now">去购买</view>
                       </view>
                     </view>
                 </view>
@@ -131,6 +132,16 @@
      * 更新属性和数据的方法与更新页面数据的方法类似
      */
     methods: {
+
+      /**
+       * 是否促销中：后端 GoodsDto 没有独立的"限时抢购"字段，
+       * 用「有划线价且高于售价」判定，避免凭空造数据。
+       */
+      isPromotion(dataItem) {
+        const line = Number(dataItem.linePrice ? dataItem.linePrice : 0)
+        const price = Number(dataItem.price ? dataItem.price : 0)
+        return line > 0 && line > price
+      },
 
       /**
        * 跳转商品详情页
@@ -303,23 +314,107 @@
           }
 
           &.column__2 {
+            /* 双列走 inline-block 而不是 float：
+               .goods-item 外面还套着一层 <scroll-view>，float 会让该层高度塌成 0，
+               mescroll 拿不到真实内容高度，上拉分页就废了。inline-block 会正常撑高。
+               font-size:0 用来消掉 inline-block 之间的空白字符（否则两列不等宽、还会换行）。 */
+            font-size: 0;
             .goods-item {
               width: 50%;
-            }
-            .desc-selling_point {
-              min-height: 40rpx;
-              line-height: 40rpx;
-              max-width: 400rpx;
-              font-size: 24rpx;
-              color: #e49a3d;
-              overflow: hidden;
-            }
-            
-            .sales {
-              color: #999;
-              font-size: 24rpx;
-              margin-top: 10rpx;
-              float: right;
+              display: inline-block;
+              vertical-align: top;
+              float: none;
+
+              /* 双列卡片：白卡 + 圆角，标题 2 行截断，价格行与销量行分开排。
+                 注意选择器必须挂在 .goods-item 下面：基础样式是
+                 .goods-container .diy-goods .goods-list .goods-item .detail …，
+                 少一层 .goods-item 权重就压不过它，价格红/2 行截断都不生效。 */
+              .goods-info {
+                background: #ffffff;
+                border-radius: 16rpx;
+                box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+                overflow: hidden;
+              }
+
+              .detail {
+                height: auto;
+                min-height: 168rpx;
+                padding: 12rpx 12rpx 14rpx;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+
+                .goods-name {
+                  /* 标题最多 2 行 */
+                  display: -webkit-box;
+                  -webkit-box-orient: vertical;
+                  -webkit-line-clamp: 2;
+                  overflow: hidden;
+                  height: auto;
+                  max-height: 76rpx;
+                  line-height: 1.35;
+                  font-size: 26rpx;
+                  font-weight: 600;
+                  color: #484848;
+                }
+
+                .detail-price {
+                  margin-top: 8rpx;
+                  display: flex;
+                  align-items: baseline;
+
+                  .goods-price {
+                    margin-right: 8rpx;
+                    /* 售价红：与券面额 #fa5151 同一套红，避免首页出现多种红 */
+                    color: #fa5151;
+                    font-size: 34rpx;
+                    font-weight: 700;
+                  }
+
+                  .line-price {
+                    color: #999999;
+                    font-size: 22rpx;
+                    text-decoration: line-through;
+                  }
+                }
+
+                .detail-bottom {
+                  margin-top: 8rpx;
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+
+                  .sales {
+                    color: #999999;
+                    font-size: 22rpx;
+                  }
+
+                  .buy-now {
+                    flex-shrink: 0;
+                    color: #ffffff;
+                    background: $bahar-theme;
+                    font-size: 20rpx;
+                    line-height: 40rpx;
+                    height: 40rpx;
+                    padding: 0 18rpx;
+                    border-radius: 999rpx;
+                    float: none;
+                  }
+                }
+              }
+
+              /* 限时抢购角标（挂在 .goods-image 上，那里是 position:relative） */
+              .flash-tag {
+                position: absolute;
+                left: 0;
+                top: 0;
+                padding: 4rpx 12rpx;
+                font-size: 20rpx;
+                color: #ffffff;
+                background: linear-gradient(135deg, #ff7a45, #fa5151);
+                border-radius: 16rpx 0 12rpx 0;
+                z-index: 5;
+              }
             }
           }
 

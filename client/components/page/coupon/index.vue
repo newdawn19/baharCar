@@ -1,74 +1,64 @@
 <template>
-  <!-- 卡券组 -->
-  <view class="diy-goods" :style="{ background: itemStyle.background }">
-    <view class="goods-list" :class="[`display__${itemStyle.display}`, `column__${itemStyle.column}`]">
-      <scroll-view :scroll-x="itemStyle.display === 'slide'">
-        <view class="goods-item" v-for="(dataItem, index) in dataList" :key="index" @click="onTargetCoupon(dataItem.id, dataItem.type, dataItem.userCouponId)">
-          <!-- 单列卡券 -->
-          <block>
-            <view class="dis-flex">
-              <!-- 卡券图片 -->
-              <view class="goods-item_left">
-                <image class="image" :src="dataItem.image"></image>
+  <!-- 卡券组：首页「优惠券领取区」用的横向券卡。
+       与旧版（列表式、点击整卡跳详情）的区别：
+         1) 横向滚动，一屏能看到 2 张以上，对齐竞品首页形态；
+         2) 「立即领取」是**真按钮**，调用 clientApi/coupon/receive 直接入账，
+            成功后按钮变「已领取」，不必再跳详情页。
+       面额 / 门槛 / 适用范围 三行全部来自后端字段，不写死：
+         面额 = amount，门槛 = sellingPoint（后端按 outRule 算），范围 = description。 -->
+  <view class="diy-coupon" :style="{ background: itemStyle.background }">
+    <scroll-view class="coupon-scroll" scroll-x :show-scrollbar="false">
+      <view class="coupon-row">
+        <view class="coupon-card bahar-press"
+              v-for="(dataItem, index) in dataList"
+              :key="index"
+              @click="onTargetCoupon(dataItem.id, dataItem.type, dataItem.userCouponId)">
+          <view class="coupon-main">
+            <view class="coupon-left">
+              <view class="coupon-amount" v-if="dataItem.amount > 0">
+                <text class="unit">¥</text><text class="num">{{ formatAmount(dataItem.amount) }}</text>
               </view>
-              <view class="goods-item_right">
-                <!-- 卡券名称 -->
-                <view class="goods-name twolist-hidden">
-                  <text>{{ dataItem.name }}</text>
-                </view>
-                <view class="goods-item_desc">
-                  <!-- 卡券卖点 -->
-                  <view class="desc-selling_point dis-flex">
-                    <text class="onelist-hidden">{{ dataItem.sellingPoint }}</text>
-                  </view>
-                  <view class="coupon-attr">
-                      <view class="attr-l">
-                          <!-- 参与人数 -->
-                          <view class="desc-goods_sales dis-flex">
-                            <text v-if="dataItem.type === 'C'">已领取{{ dataItem.gotNum }}，剩余{{ dataItem.leftNum }}</text>
-                            <text v-if="dataItem.type === 'P'">已预存{{ dataItem.gotNum }}，剩余{{ dataItem.leftNum }}</text>
-                            <text v-if="dataItem.type === 'T'">已领取{{ dataItem.gotNum }}</text>
-                          </view>
-                          <!-- 卡券面额 -->
-                          <view v-if="dataItem.amount > 0" class="desc_footer">
-                            <text class="price_x">¥{{ dataItem.amount }}</text>
-                          </view>
-                      </view>
-                      <view class="attr-r">
-                          <!--领券按钮-->
-                          <view class="receive" v-if="dataItem.type === 'C' && dataItem.isReceive === false">
-                              <text>立即领取</text>
-                          </view>
-                          <view class="receive state" v-if="dataItem.type === 'C' && dataItem.isReceive === true">
-                              <text>已领取</text>
-                          </view>
-                          <view class="receive" v-if="dataItem.type === 'P' && dataItem.isReceive === false">
-                              <text>立即预存</text>
-                          </view>
-                          <view v-if="dataItem.type === 'T' && dataItem.isReceive === false" class="receive">
-                              <text>领取次卡</text>
-                          </view>
-                          <view v-if="dataItem.type === 'T' && dataItem.isReceive === true" class="receive state">
-                              <text>已领取</text>
-                          </view>
-                      </view>
-                  </view>
-                </view>
+              <view class="coupon-amount coupon-amount--name" v-else>
+                <text class="name">{{ dataItem.name }}</text>
+              </view>
+              <view class="coupon-rule">{{ dataItem.sellingPoint ? dataItem.sellingPoint : '' }}</view>
+              <view class="coupon-range">{{ rangeText(dataItem) }}</view>
+            </view>
+            <view class="coupon-split"></view>
+            <view class="coupon-right">
+              <!-- 优惠券：可领取 / 已领取 -->
+              <view v-if="dataItem.type === 'C'"
+                    class="coupon-btn"
+                    :class="{ 'coupon-btn--state': dataItem.isReceive }"
+                    @click.stop="onReceive(dataItem)">
+                {{ dataItem.isReceive ? '已领取' : '立即领取' }}
+              </view>
+              <!-- 储值卡 -->
+              <view v-else-if="dataItem.type === 'P'" class="coupon-btn">立即预存</view>
+              <!-- 计次卡 -->
+              <view v-else class="coupon-btn"
+                    :class="{ 'coupon-btn--state': dataItem.isReceive }">
+                {{ dataItem.isReceive ? '已领取' : '领取次卡' }}
               </view>
             </view>
-          </block>
+          </view>
+          <view class="coupon-stock" v-if="dataItem.leftNum >= 0">
+            <text>剩余{{ dataItem.leftNum }}张</text>
+          </view>
         </view>
-      </scroll-view>
-    </view>
+        <view class="coupon-tail" v-if="dataList.length === 0"></view>
+      </view>
+    </scroll-view>
   </view>
 </template>
 
 <script>
   import * as couponApi from '@/api/coupon'
-  import * as pageApi from '@/api/page'
+  import { checkLogin } from '@/utils/app'
+
   export default {
     name: "Coupon",
-    
+
     /**
      * 组件的属性列表
      * 用于组件自定义设置
@@ -85,214 +75,219 @@
      * 更新属性和数据的方法与更新页面数据的方法类似
      */
     methods: {
+
       /**
-       * 卡券详情页
+       * 面额展示：整数不带小数，避免 "¥100.00" 撑破卡片
+       */
+      formatAmount(amount) {
+        const num = Number(amount)
+        if (isNaN(num)) {
+          return '0'
+        }
+        return num % 1 === 0 ? String(num) : num.toFixed(2)
+      },
+
+      /**
+       * 适用范围：后端把范围写在 description（全场通用 / 指定商品可用）
+       */
+      rangeText(dataItem) {
+        const text = dataItem.description ? String(dataItem.description).trim() : ''
+        if (!text || text === dataItem.name) {
+          return '全场通用'
+        }
+        return text
+      },
+
+      /**
+       * 领取优惠券（真入账）
+       * @param {Object} dataItem 当前券
+       */
+      onReceive(dataItem) {
+        const app = this
+        if (dataItem.isReceive) {
+          return
+        }
+        if (!checkLogin()) {
+          uni.showModal({
+            title: '温馨提示',
+            content: '登录后才能领取优惠券',
+            confirmText: '去登录',
+            cancelText: '再逛逛',
+            success(res) {
+              if (res.confirm) {
+                uni.navigateTo({ url: '/pages/login/index' })
+              }
+            }
+          })
+          return
+        }
+        // 加载动画与失败提示都由 request 插件负责（默认 isPrompt/load 都是 true），
+        // 这里不再自己 showLoading，避免两层 loading 互相顶掉。
+        couponApi.receive({ couponId: dataItem.id })
+          .then(() => {
+            // 就地更新（dataList 由父级传入，改对象属性即可生效）
+            app.$set(dataItem, 'isReceive', true)
+            app.$set(dataItem, 'leftNum', Math.max(0, (dataItem.leftNum || 0) - 1))
+            uni.showToast({ title: '领取成功', icon: 'success' })
+            app.$emit('receive', dataItem)
+          })
+          .catch(() => {
+            // request 插件已按接口返回的 message 弹过提示
+          })
+      },
+
+      /**
+       * 卡券详情页（点卡片空白处）
        */
       onTargetCoupon(couponId, type, userCouponId) {
-          if (type === 'P') {
-              this.$navTo(`subPages/prestore/buy`, { couponId })
-          } else {
-              if (type === 'C') {
-                    this.$navTo(`subPages/coupon/detail`, { couponId: couponId, userCouponId: userCouponId })
-              } else if(type === 'T') {
-                  this.$navTo(`subPages/timer/detail`, { couponId: couponId, userCouponId: userCouponId })
-              }
-         }
+        if (type === 'P') {
+          this.$navTo(`subPages/prestore/buy`, { couponId })
+        } else if (type === 'C') {
+          this.$navTo(`subPages/coupon/detail`, { couponId: couponId, userCouponId: userCouponId })
+        } else if (type === 'T') {
+          this.$navTo(`subPages/timer/detail`, { couponId: couponId, userCouponId: userCouponId })
+        }
       }
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  .diy-goods {
-    .goods-list {
-      padding: 4rpx;
+  /* 卡片容器：外边距由首页的 .bahar-card 统一给，这里只负责横向排布 */
+  .diy-coupon {
+    width: 100%;
+    box-sizing: border-box;
+
+    .coupon-scroll {
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    .coupon-row {
+      display: inline-block;
+      white-space: nowrap;
+      padding: 4rpx 0 8rpx;
+      /* 消掉 inline-block 之间的空白字符，卡片间距只由 margin-right 决定，
+         这样「一屏正好两张」的宽度是可算的 */
+      font-size: 0;
+    }
+
+    /* 横向券卡：卡片宽度按「首页卡片内可用宽度 654rpx 正好放两张」反推 */
+    .coupon-card {
+      display: inline-block;
+      vertical-align: top;
+      width: 310rpx;
+      min-height: 160rpx;
+      margin-right: 16rpx;
+      padding: 20rpx 16rpx 12rpx;
       box-sizing: border-box;
+      background: #ffffff;
+      border: 1rpx solid #e6e6e6;
+      border-radius: 16rpx;
+      white-space: normal;
 
-      .goods-item {
-        box-sizing: border-box;
-        padding: 6rpx;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
 
-        .goods-image {
-          position: relative;
-          width: 80rpx;
-          height: 63rpx;
-          border-radius: 5rpx;
-          padding-bottom: 100%;
-          overflow: hidden;
-          background: #fff;
+    .coupon-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-          &:after {
-            content: '';
-            display: block;
-            margin-top: 100%;
-          }
+    .coupon-left {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+    }
 
-          .image {
-            position: absolute;
-            width: 80rpx;
-            height: 63rpx;
-            border-radius: 5rpx;
-            top: 0;
-            left: 0;
-            -o-object-fit: cover;
-            object-fit: cover;
-          }
-        }
+    .coupon-amount {
+      color: #fa5151;
+      font-weight: 700;
+      font-size: 40rpx;
+      line-height: 1.1;
 
-        .detail {
-          padding: 8rpx;
-          background: #fff;
-
-          .goods-name {
-            height: 64rpx;
-            line-height: 1.3;
-            white-space: normal;
-            color: #484848;
-            font-size: 26rpx;
-          }
-
-          .detail-price {
-            .goods-price {
-              margin-right: 8rpx;
-            }
-
-            .line-price {
-              text-decoration: line-through;
-            }
-          }
-        }
+      .unit {
+        font-size: 24rpx;
       }
 
-      &.display__slide {
-        white-space: nowrap;
-        font-size: 0;
-
-        .goods-item {
-          display: inline-block;
-        }
+      .num {
+        font-size: 40rpx;
       }
 
-      &.display__list {
-        .goods-item {
-          float: left;
+      /* 面额为 0 的券直接显示券名，避免出现 ¥0 */
+      &--name {
+        color: #333333;
+
+        .name {
+          font-size: 28rpx;
         }
       }
+    }
 
-      &.column__2 {
-        .goods-item {
-          width: 50%;
-        }
+    .coupon-rule {
+      margin-top: 6rpx;
+      font-size: 22rpx;
+      color: #666666;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .coupon-range {
+      margin-top: 4rpx;
+      font-size: 20rpx;
+      color: #666666;
+      opacity: 0.75;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* 左信息 / 右按钮之间的虚线 */
+    .coupon-split {
+      align-self: stretch;
+      margin: 0 14rpx;
+      border-left: 1rpx dashed #e6e6e6;
+    }
+
+    .coupon-right {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .coupon-btn {
+      height: 48rpx;
+      line-height: 48rpx;
+      padding: 0 16rpx;
+      border-radius: 26rpx;
+      font-size: 20rpx;
+      color: #ffffff;
+      background: $bahar-theme;
+      text-align: center;
+      transition: transform 0.15s ease, background 0.15s ease;
+
+      &:active {
+        transform: scale(0.94);
       }
 
-      &.column__3 {
-        .goods-item {
-          width: 33.33333%;
-        }
+      /* 已领取 / 不可领取 */
+      &--state {
+        color: #cccccc;
+        background: #f5f5f5;
       }
+    }
 
-      &.column__1 {
-        .goods-item {
-          width: 100%;
-          height: 240rpx;
-          margin-bottom: 12rpx;
-          padding: 20rpx;
-          box-sizing: border-box;
-          background: #fff;
-          line-height: 1.6;
-
-          &:last-child {
-            margin-bottom: 0;
-          }
-        }
-
-        .goods-item_left {
-          display: flex;
-          width: 35%;
-          background: #fff;
-          align-items: center;
-
-          .image {
-            display: block;
-            margin-top: 20rpx;
-            width: 200rpx;
-            height: 157rpx;
-            border-radius: 6rpx;
-          }
-        }
-
-        .goods-item_right {
-          position: relative;
-          width: 65%;
-          .goods-name {
-            margin-top: 20rpx;
-            height: 40rpx;
-            line-height: 1.0;
-            white-space: normal;
-            color: #484848;
-            font-size: 30rpx;
-          }
-        }
-
-        .goods-item_desc {
-          margin-top: 0rpx;
-          .coupon-attr {
-             .attr-l {
-                 float:left;
-                 width: 70%;
-             }
-             .attr-r {
-                 margin-top:20rpx;
-                 float:left;
-             }
-          }
-        }
-
-        .desc-selling_point {
-          width: 400rpx;
-          font-size: 24rpx;
-          color: #e49a3d;
-        }
-        /* 领券按钮：与首页「去购买」同为主色胶囊。
-           原黄底(#f8df98)+橙字(#f86d48)会在首页引入第 4 套强调色，与竞品的克制配色不符。 */
-        .receive {
-          height: 46rpx;
-          width: 128rpx;
-          line-height: 46rpx;
-          text-align: center;
-          border: 1rpx solid $bahar-theme;
-          border-radius: 5rpx;
-          color: #ffffff;
-          background: $bahar-theme;
-          font-size: 22rpx;
-          &.state {
-            border: none;
-            color: #cccccc;
-            background: #F5F5F5;
-          }
-        }
-
-        .desc-goods_sales {
-          color: #999;
-          font-size: 24rpx;
-        }
-
-        .desc_footer {
-          font-size: 24rpx;
-
-          /* 面额也是"价格"，跟首页商品价统一成 #fa5151（原来这里用的 #f03c3c，
-             会让首页出现两套红） */
-          .price_x {
-            margin-right: 16rpx;
-            color: #fa5151;
-            font-size: 30rpx;
-          }
-
-          .price_y {
-            text-decoration: line-through;
-          }
-        }
-      }
+    .coupon-stock {
+      margin-top: 10rpx;
+      font-size: 20rpx;
+      color: #999999;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 </style>
