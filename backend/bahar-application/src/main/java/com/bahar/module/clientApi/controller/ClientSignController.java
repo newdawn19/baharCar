@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -218,9 +219,11 @@ public class ClientSignController extends BaseController {
         Integer merchantId = merchantService.getMerchantId(merchantNo);
         // 校验商户是否已过期
         merchantService.checkMerchantValid(merchantId);
-        MtUser userData = memberService.queryMemberByName(merchantId, account);
-        if (userData != null) {
-            return getFailureResult(201,"该用户名已存在");
+        // name 仅作为昵称（允许重复、可个性化），唯一性由手机号(mobile)/会员号(user_no)保证；
+        // 因此此处不再按姓名判重，仅当填写的账号撞上他人已有的登录凭证时才拒绝
+        List<MtUser> userDataList = memberService.queryMemberByMobileOrUserNo(merchantId, account);
+        if (userDataList != null && userDataList.size() > 0) {
+            return getFailureResult(201,"该账号已存在");
         }
 
         MtUser mtUser = new MtUser();
@@ -232,10 +235,7 @@ public class ClientSignController extends BaseController {
         mtUser.setMobile("");
         mtUser.setDescription("会员自行注册新账号");
         mtUser.setIsStaff(YesOrNoEnum.NO.getKey());
-        MtUser mtUserExist = memberService.queryMemberByName(mtUser.getMerchantId(), mtUser.getName());
-        if (mtUserExist != null) {
-            return getFailureResult(201,"该用户名已存在");
-        }
+        // 姓名为昵称可重复，重名由 addMember 内部自动改用会员号兜底，此处无需重复判重
         MtUser userInfo = memberService.addMember(mtUser, shareId);
 
         if (userInfo != null) {
@@ -341,22 +341,30 @@ public class ClientSignController extends BaseController {
                 return getFailureResult(201,"图形验证码有误");
             }
 
-            MtUser userInfo = memberService.queryMemberByName(merchantId, account);
-            if (userInfo != null) {
-                String myPassword = userInfo.getPassword();
-                String inputPassword = memberService.deCodePassword(password, userInfo.getSalt());
-                if (myPassword.equals(inputPassword)) {
-                    token = TokenUtil.generateToken(userAgent, userInfo.getId());
-                    UserInfo loginInfo = new UserInfo();
-                    loginInfo.setToken(token);
-                    loginInfo.setId(userInfo.getId());
-                    loginInfo.setMobile(userInfo.getMobile());
-                    TokenUtil.saveToken(loginInfo);
-                    dto.setToken(token);
-                    mtUser = userInfo;
-                } else {
-                    return getFailureResult(201, "账号或密码有误");
+            // 账号字段支持「手机号(mobile)」或「会员号(user_no)」登录，二者均唯一；不使用姓名（姓名可重复）
+            MtUser userInfo = null;
+            List<MtUser> candidates = memberService.queryMemberByMobileOrUserNo(merchantId, account);
+            if (candidates != null) {
+                for (MtUser u : candidates) {
+                    if (u != null) {
+                        String myPassword = u.getPassword();
+                        String inputPassword = memberService.deCodePassword(password, u.getSalt());
+                        if (myPassword.equals(inputPassword)) {
+                            userInfo = u;
+                            break;
+                        }
+                    }
                 }
+            }
+            if (userInfo != null) {
+                token = TokenUtil.generateToken(userAgent, userInfo.getId());
+                UserInfo loginInfo = new UserInfo();
+                loginInfo.setToken(token);
+                loginInfo.setId(userInfo.getId());
+                loginInfo.setMobile(userInfo.getMobile());
+                TokenUtil.saveToken(loginInfo);
+                dto.setToken(token);
+                mtUser = userInfo;
             } else {
                 return getFailureResult(201, "账号或密码有误");
             }
