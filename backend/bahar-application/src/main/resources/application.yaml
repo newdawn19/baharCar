@@ -14,7 +14,7 @@ spring:
       namespace: bahar:car
   datasource:
     # WebSite：https://www.bahar.cn #########################
-    url: "jdbc:mysql://${DB_HOST:localhost}:3306/bahar-car?useUnicode=true&characterEncoding=UTF8&useSSL=false"
+    url: "jdbc:mysql://${DB_HOST:localhost}:3306/bahar-car?useUnicode=true&characterEncoding=UTF8&useSSL=false&serverTimezone=Asia%2FShanghai"
     username: "${DB_USER:root}"
     password: "${DB_PASSWORD:rootAdmin@0731}"
     type: "com.zaxxer.hikari.HikariDataSource"
@@ -31,6 +31,7 @@ spring:
   jackson:
     # 默认时间格式
     date-format: "yyyy-MM-dd HH:mm:ss"
+    time-zone: GMT+8
   main:
     allow-circular-references: "true"
   mvc:
